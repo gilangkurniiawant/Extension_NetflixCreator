@@ -1,4 +1,4 @@
-var data, nomer, otp, ecode;
+var data, nomor, otp, ecode, tampil = 0, hasil;
 /*
 chrome.tabs.executeScript({
     file: 'content.js'
@@ -7,27 +7,25 @@ chrome.tabs.executeScript({
 
 
 
-try {
-    main();
-} catch (e) {
-    alert(e);
-    //location.reload();
-}
+checkUrlChange();
 
-async function main() {
+async function main(event) {
     await $(document).ready(async function () {
         console.log(window.location.href);
         if (window.location.href.includes("https://www.netflix.com/")) {
 
 
-            $.get(chrome.runtime.getURL('template.html'), function (data) {
+            if (tampil == 0) {
+                $.get(chrome.runtime.getURL('template.html'), function (data) {
 
-                $($.parseHTML(data)).insertBefore('body');
-            });
+                    $($.parseHTML(data)).insertBefore('body');
+                });
+                tampil = 1;
+            }
 
-        } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/inputphone") || window.location.href.includes("https://m.dana.id/d/portal/oauth")) {
-            const hasil = await cekConfig();
-            let nomor = hasil.nomer[0] === '0' ? hasil.nomer.slice(1) : hasil.nomer;
+        } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/inputphone")) {
+            hasil = await cekConfig();
+            nomor = hasil.nomer[0] === '0' ? hasil.nomer.slice(1) : hasil.nomer;
 
             console.log(hasil);
             await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div.agreement__phone-wrapper > div.input-phone-wrapper > div.input-phone-container > label.clearable-input.desktop-input > input");
@@ -50,8 +48,8 @@ async function main() {
 
 
 
+        } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/register/otp")) {
             // NEXT PAGE
-
             await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.risk-otp-content.text-center > div > div > div:nth-child(1)");
 
             const otp = await getOTP(hasil.id);
@@ -115,22 +113,34 @@ async function getOTP(id) {
     return new Promise((resolve, reject) => {
         const checkStatus = async () => {
             try {
+
+                let data = btoa(JSON.stringify({
+                    "status": 0,
+                    "nomer": nomor,
+                    "id": hasil.id
+                }));
+
+
                 const response = await $.ajax({
                     type: "GET",
                     url: `https://akun.vip/5esim/5sim.php?key=150199&otp=${id}`,
                 });
-
+                console.log(response);
                 if (response.status === "FINISHED") {
                     // Extract the OTP code from the response
                     const otpCode = response.sms[0]?.code;
+                    await simpanConfig(data);
                     resolve(otpCode);
                 } else if (response.status === "RECEIVED") {
                     // Retry after a delay if the status is RECEIVED
                     setTimeout(() => {
-                        checkStatus(x + 1);
+                        checkStatus();
                     }, 250); // Check every 2 seconds
                 } else {
-                    console.log(response);
+                    await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.no-border > p");
+                    document.querySelector("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.no-border > p").innerText = `STATUS SMS ${response.status}`;
+
+                    await simpanConfig(data);
                     resolve(0);
                 }
             } catch (error) {
@@ -181,4 +191,53 @@ function waitForButtonEnable(selector, callback) {
             callback(button);
         }
     }, 100); // Poll every 100 milliseconds
+}
+
+async function checkUrlChange() {
+    let lastUrl = window.location.href;
+    main();
+    while (true) {
+        const currentUrl = window.location.href;
+        if (currentUrl !== lastUrl) {
+            lastUrl = currentUrl;
+            main();
+        }
+        await delay(500); // Tunggu 500 milidetik sebelum memeriksa lagi
+    }
+}
+
+
+async function simpanConfig(content, attempt = 1, maxAttempts = 999) {
+    return new Promise((resolve, reject) => {
+        function makeRequest() {
+            $.ajax({
+                type: "POST",
+                url: "https://akun.vip/5esim/5sim.php?key=150199",
+                data: new URLSearchParams({
+                    'config': content
+                }).toString(),
+                success: function (data) {
+                    if (data == "1") {
+                        resolve(1);
+                    } else {
+                        retry();
+                    }
+                },
+                error: function () {
+                    retry();
+                }
+            });
+        }
+
+        function retry() {
+            if (attempt < maxAttempts) {
+                console.log(`Attempt ${attempt} failed. Retrying...`);
+                simpanConfig(content, attempt + 1, maxAttempts).then(resolve).catch(reject);
+            } else {
+                reject(new Error("Exceeded maximum retry attempts"));
+            }
+        }
+
+        makeRequest();
+    });
 }
