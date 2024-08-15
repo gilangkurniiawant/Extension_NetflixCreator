@@ -14,13 +14,38 @@ async function main(event) {
         console.log(window.location.href);
         if (window.location.href.includes("https://www.netflix.com/")) {
 
+            if (window.location.href == "https://www.netflix.com/signup/mobileWalletOption") {
+                hasil = await cekConfig();
+                nomor = hasil.nomer[0] === '0' ? hasil.nomer.slice(1) : hasil.nomer;
 
-            if (tampil == 0) {
-                $.get(chrome.runtime.getURL('template.html'), function (data) {
-
-                    $($.parseHTML(data)).insertBefore('body');
+                console.log(nomor)
+                const observer = new MutationObserver((mutations, observer) => {
+                    const phoneNumberElement = document.querySelector("#id_phoneNumber");
+                    if (phoneNumberElement && phoneNumberElement.offsetParent !== null) { // Check if visible
+                        document.querySelector("#id_phoneNumber").focus();
+                        document.execCommand('insertText', false, nomor);
+                        console.log(nomor)
+                        observer.disconnect(); // Stop observing
+                        // Perform your action here
+                    }
                 });
-                tampil = 1;
+
+                // Start observing changes in the body
+                observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+
+
+
+
+            } else {
+
+
+                if (tampil == 0) {
+                    $.get(chrome.runtime.getURL('template.html'), function (data) {
+
+                        $($.parseHTML(data)).insertBefore('body');
+                    });
+                    tampil = 1;
+                }
             }
 
         } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/inputphone")) {
@@ -91,6 +116,7 @@ async function cekConfig() {
             $.ajax({
                 type: "GET",
                 url: "https://akun.vip/5esim/config.json",
+                cache: false,
                 success: function (data) {
                     if (data.status === 1) {
                         resolve(data);
@@ -124,6 +150,7 @@ async function getOTP(id) {
                 const response = await $.ajax({
                     type: "GET",
                     url: `https://akun.vip/5esim/5sim.php?key=150199&otp=${id}`,
+                    cache: false,
                 });
                 console.log(response);
                 if (response.status === "FINISHED") {
@@ -216,6 +243,7 @@ async function simpanConfig(content, attempt = 1, maxAttempts = 999) {
                 data: new URLSearchParams({
                     'config': content
                 }).toString(),
+                cache: false,
                 success: function (data) {
                     if (data == "1") {
                         resolve(1);
