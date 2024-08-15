@@ -25,6 +25,7 @@ async function main(event) {
                         document.querySelector("#id_phoneNumber").focus();
                         document.execCommand('insertText', false, nomor);
                         console.log(nomor)
+                        document.querySelector("#cb_hasAcceptedTermsOfUse")
                         observer.disconnect(); // Stop observing
                         // Perform your action here
                     }
@@ -56,6 +57,7 @@ async function main(event) {
             await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div.agreement__phone-wrapper > div.input-phone-wrapper > div.input-phone-container > label.clearable-input.desktop-input > input");
             let isinomer = document.querySelector("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div.agreement__phone-wrapper > div.input-phone-wrapper > div.input-phone-container > label.clearable-input.desktop-input > input");
 
+            isinomer.value = ' ';
             // Focus on the input
             isinomer.focus();
 
@@ -96,10 +98,43 @@ async function main(event) {
             }
 
             for (let i = 0; i < otp.length; i++) {
-                setTimeout(() => {
-                    OTPsimulateTyping(otp[i]);
-                }, i * 500);
+
+                OTPsimulateTyping(otp[i]);
+                await delay(50);
             }
+
+            let ipin = "121212";
+            let ipin2 = "121212";
+
+
+            await tunggu("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(1)");
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(1)").focus();
+            document.execCommand('insertText', false, ipin.substring(0, 1));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(2)").focus();
+            document.execCommand('insertText', false, ipin.substring(1, 2));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(3)").focus();
+            document.execCommand('insertText', false, ipin.substring(2, 3));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(4)").focus();
+            document.execCommand('insertText', false, ipin.substring(3, 4));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(5)").focus();
+            document.execCommand('insertText', false, ipin.substring(4, 5));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(6)").focus();
+            document.execCommand('insertText', false, ipin.substring(5, 6));
+
+
+            await delay(1000);
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(1)").focus();
+            document.execCommand('insertText', false, ipin2.substring(0, 1));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(2)").focus();
+            document.execCommand('insertText', false, ipin2.substring(1, 2));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(3)").focus();
+            document.execCommand('insertText', false, ipin2.substring(2, 3));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(4)").focus();
+            document.execCommand('insertText', false, ipin2.substring(3, 4));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(5)").focus();
+            document.execCommand('insertText', false, ipin2.substring(4, 5));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(6)").focus();
+            document.execCommand('insertText', false, ipin2.substring(5, 6));
 
 
 
@@ -156,18 +191,27 @@ async function getOTP(id) {
                 if (response.status === "FINISHED") {
                     // Extract the OTP code from the response
                     const otpCode = response.sms[0]?.code;
+                    hasil = 0;
                     await simpanConfig(data);
                     resolve(otpCode);
                 } else if (response.status === "RECEIVED") {
-                    // Retry after a delay if the status is RECEIVED
-                    setTimeout(() => {
-                        checkStatus();
-                    }, 250); // Check every 2 seconds
+                    if (response.sms && response.sms.length > 0 && response.sms[0]?.code) {
+                        const otpCode = response.sms[0].code;
+                        await simpanConfig(data);
+                        hasil = 0;
+                        resolve(otpCode);
+                    } else {
+                        setTimeout(() => {
+                            checkStatus();
+                        }, 250); // Check every 2 seconds
+
+                        let re
+                    }
                 } else {
                     await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.no-border > p");
                     document.querySelector("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.no-border > p").innerText = `STATUS SMS ${response.status}`;
 
-                    await simpanConfig(data);
+                    hasil = 0;
                     resolve(0);
                 }
             } catch (error) {
