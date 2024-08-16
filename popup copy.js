@@ -11,15 +11,15 @@ checkUrlChange();
 
 async function main(event) {
     await $(document).ready(async function () {
-
+        console.log(window.location.href);
         if (window.location.href.includes("https://www.netflix.com/")) {
 
             if (window.location.href == "https://www.netflix.com/signup") {
                 await tunggu("#appMountPoint > div > div > div > div.simpleContainer > div > div.submitBtnContainer > button");
                 document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div.submitBtnContainer > button").click();
-            } else if (window.location.href == "https://www.netflix.com/signup/planform") {
+
                 await tunggu("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(3) > div > label");
-                document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(3) > div > label").click();
+                document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(3) > div > label");
 
                 await delay(500);
                 document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-0 > div > button").click();
@@ -42,8 +42,34 @@ async function main(event) {
                 document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > form > div.paymentFormContainer > div.fieldContainer > div.ui-select-wrapper.mobile-wallet-select > a > div").click();
                 await delay(500);
                 document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > form > div.paymentFormContainer > div.fieldContainer > div.ui-select-wrapper.ui-select-wrapper-open.mobile-wallet-select > ul > li:nth-child(2)").click()
+
+
+
+
+                const hasil = await cekConfig();
+                console.log(hasil);
+
+                const nomor = hasil.nomer[0] === '0' ? hasil.nomer.slice(1) : hasil.nomer;
+                const phoneNumberElement = document.querySelector("#id_phoneNumber");
+
+                if (phoneNumberElement) {
+                    input.focus();
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('delete', false, null);
+                } else {
+                    console.error('Element with ID "id_phoneNumber" not found.');
+                }
+
+                phoneNumberElement.focus();
+                document.execCommand('insertText', false, nomor);
+                console.log(nomor);
                 document.querySelector("#cb_hasAcceptedTermsOfUse").click();
-                document.querySelector("#id_phoneNumber").focus();
+
+
+
+
+
+
 
             } else {
 
@@ -57,14 +83,100 @@ async function main(event) {
                 }
             }
 
-        }
+        } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/inputphone")) {
+            hasil = await cekConfig();
+            nomor = hasil.nomer[0] === '0' ? hasil.nomer.slice(1) : hasil.nomer;
 
+            console.log(hasil);
+            await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div.agreement__phone-wrapper > div.input-phone-wrapper > div.input-phone-container > label.clearable-input.desktop-input > input");
+            let isinomer = document.querySelector("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div.agreement__phone-wrapper > div.input-phone-wrapper > div.input-phone-container > label.clearable-input.desktop-input > input");
+
+            isinomer.value = ' ';
+            // Focus on the input
+            isinomer.focus();
+
+            // Simulate typing with delays
+            function simulateTyping(text, index = 0) {
+                if (index < text.length) {
+                    isinomer.value += text[index];
+                    isinomer.dispatchEvent(new Event('input', { bubbles: true }));
+                    setTimeout(() => simulateTyping(text, index + 1), Math.random() * 10 + 15); // Random delay
+                }
+            }
+            isinomer.click();
+
+            simulateTyping(nomor);
+
+
+
+        } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/register/otp")) {
+            // NEXT PAGE
+            await tunggu("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.risk-otp-content.text-center > div > div > div:nth-child(1)");
+
+            const otp = await getOTP(hasil.id);
+
+            function OTPsimulateTyping(otp) {
+                // Seleksi elemen input
+                const inputElement = document.querySelector("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div > div.risk-otp-content.text-center > div > div > input");
+
+                // Set nilai input
+                inputElement.value = otp;
+
+                // Buat dan kirim event 'input'
+                const inputEvent = new Event('input', { bubbles: true });
+                inputElement.dispatchEvent(inputEvent);
+
+                // Opsional: Buat dan kirim event 'change' jika diperlukan
+                const changeEvent = new Event('change', { bubbles: true });
+                inputElement.dispatchEvent(changeEvent);
+            }
+
+            for (let i = 0; i < otp.length; i++) {
+
+                OTPsimulateTyping(otp[i]);
+                await delay(50);
+            }
+
+            let ipin = "121212";
+            let ipin2 = "121212";
+
+
+            await tunggu("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(1)");
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(1)").focus();
+            document.execCommand('insertText', false, ipin.substring(0, 1));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(2)").focus();
+            document.execCommand('insertText', false, ipin.substring(1, 2));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(3)").focus();
+            document.execCommand('insertText', false, ipin.substring(2, 3));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(4)").focus();
+            document.execCommand('insertText', false, ipin.substring(3, 4));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(5)").focus();
+            document.execCommand('insertText', false, ipin.substring(4, 5));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(6)").focus();
+            document.execCommand('insertText', false, ipin.substring(5, 6));
+
+
+            await delay(1000);
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(1)").focus();
+            document.execCommand('insertText', false, ipin2.substring(0, 1));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(2)").focus();
+            document.execCommand('insertText', false, ipin2.substring(1, 2));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(3)").focus();
+            document.execCommand('insertText', false, ipin2.substring(2, 3));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(4)").focus();
+            document.execCommand('insertText', false, ipin2.substring(3, 4));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(5)").focus();
+            document.execCommand('insertText', false, ipin2.substring(4, 5));
+            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(6)").focus();
+            document.execCommand('insertText', false, ipin2.substring(5, 6));
+
+
+
+        }
     });
 
 
 };
-
-
 
 
 async function cekConfig() {
