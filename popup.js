@@ -57,6 +57,25 @@ async function main(event) {
                 }
             }
 
+        } else if (window.location.href.includes("https://m.dana.id/d/ipg/new/register/pin")) {
+            let ipin = "121212";
+
+            async function enterPin(selectorBase, ipin) {
+                for (let i = 0; i < ipin.length; i++) {
+                    let selector = `${selectorBase} > div:nth-child(${i + 1})`;
+                    await tunggu(selector);
+                    document.querySelector(selector).focus();
+                    document.execCommand('insertText', false, ipin.substring(i, i + 1));
+                }
+            }
+
+            await enterPin("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div:nth-child(3) > div.input-pin__input-wrapper > div", ipin);
+
+            await delay(100);
+
+            await enterPin("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div:nth-child(5) > div.input-pin__input-wrapper > div", ipin);
+
+
         }
 
     });

@@ -138,39 +138,21 @@ async function main(event) {
             }
 
             let ipin = "121212";
-            let ipin2 = "121212";
 
+            async function enterPin(selectorBase, ipin) {
+                for (let i = 0; i < ipin.length; i++) {
+                    let selector = `${selectorBase} > div:nth-child(${i + 1})`;
+                    await tunggu(selector);
+                    document.querySelector(selector).focus();
+                    document.execCommand('insertText', false, ipin.substring(i, i + 1));
+                }
+            }
 
-            await tunggu("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(1)");
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(1)").focus();
-            document.execCommand('insertText', false, ipin.substring(0, 1));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(2)").focus();
-            document.execCommand('insertText', false, ipin.substring(1, 2));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(3)").focus();
-            document.execCommand('insertText', false, ipin.substring(2, 3));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(4)").focus();
-            document.execCommand('insertText', false, ipin.substring(3, 4));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(5)").focus();
-            document.execCommand('insertText', false, ipin.substring(4, 5));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(2) > div > div:nth-child(6)").focus();
-            document.execCommand('insertText', false, ipin.substring(5, 6));
+            await enterPin("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div:nth-child(3) > div.input-pin__input-wrapper > div", ipin);
 
+            await delay(100);
 
-            await delay(1000);
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(1)").focus();
-            document.execCommand('insertText', false, ipin2.substring(0, 1));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(2)").focus();
-            document.execCommand('insertText', false, ipin2.substring(1, 2));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(3)").focus();
-            document.execCommand('insertText', false, ipin2.substring(2, 3));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(4)").focus();
-            document.execCommand('insertText', false, ipin2.substring(3, 4));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(5)").focus();
-            document.execCommand('insertText', false, ipin2.substring(4, 5));
-            document.querySelector("#app > div > div > div.web-checkout-wrapper > div > div > div > div > div:nth-child(4) > div > div:nth-child(6)").focus();
-            document.execCommand('insertText', false, ipin2.substring(5, 6));
-
-
+            await enterPin("#app > div > div > div.ipg-new__wrapper > div.ipg-new__content > div > div.card-agreement > main > div > div:nth-child(5) > div.input-pin__input-wrapper > div", ipin);
 
         }
     });
