@@ -145,6 +145,7 @@ async function pilihan_1() {
             }
         }
 
+        /*
         path = {
             "hideAll": "true",
             "guid": guid_utama,
@@ -158,6 +159,7 @@ async function pilihan_1() {
         } else {
             $('#akunvip').append('<h1 style="display: inline;color:#01937C">  1 OK!<h/1>');
         }
+        */
 
         url_create = 'https://www.netflix.com/api/shakti/mre/profiles/create';
         avatar = ['', '', 'AVATAR|d00388f0-6620-11e9-a8d8-124bf1e73cce|en|ID|80108159', 'AVATAR|d00361e0-6620-11e9-a8d8-124bf1e73cce|en|ID|80108159', 'AVATAR|d00388f1-6620-11e9-a8d8-124bf1e73cce|en|ID|80108159', 'AVATAR|d00361e1-6620-11e9-a8d8-124bf1e73cce|en|ID|80108159'];
