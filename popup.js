@@ -18,11 +18,11 @@ async function main(event) {
                 await tunggu("#appMountPoint > div > div > div > div.simpleContainer > div > div.submitBtnContainer > button");
                 document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div.submitBtnContainer > button").click();
             } else if (window.location.href == "https://www.netflix.com/signup/planform") {
-                await tunggu("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(3) > div > label");
-                document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(3) > div > label").click();
+                await tunggu("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(2) > div > label");
+                document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-xu8gj4 > div > div:nth-child(2) > div > label").click();
 
                 await delay(500);
-                document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-0 > div > button").click();
+                // document.querySelector("#appMountPoint > div > div > div > div.simpleContainer > div > div > div.default-ltr-cache-0 > div > button").click();
 
 
 
